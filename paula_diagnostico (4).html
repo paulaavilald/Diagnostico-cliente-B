@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paula Ávila — Diagnóstico de Contratação</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:    #F2EDE8;
+  --page:  #E5DFD8;
+  --text:  #1C1C1C;
+  --wine:  #7B2D3E;
+  --navy:  #1E3A5F;
+  --mid:   #4A6741;
+  --muted: #8A7F78;
+  --soft:  #5A5148;
+  --dot:   #C5BAB0;
+  --cream: #EDE8E2;
+  --ok:    #4A6741;
+  --warn:  #7B5C1A;
+  --risk:  #7B2D3E;
+}
+
+body {
+  background: var(--page);
+  font-family: 'EB Garamond', Georgia, serif;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ══ TABS ══════════════════════════════════════════ */
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--navy);
+  display: flex;
+  align-items: stretch;
+  padding: 0 32px;
+  gap: 0;
+}
+.tab-logo {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(237,232,226,0.45);
+  padding: 18px 28px 18px 0;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  margin-right: 24px;
+  white-space: nowrap;
+  align-self: center;
+}
+.tab {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: rgba(237,232,226,0.5);
+  padding: 18px 20px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.tab:hover { color: rgba(237,232,226,0.8); }
+.tab.active {
+  color: var(--cream);
+  border-bottom-color: var(--cream);
+}
+.tab-spacer { flex: 1; }
+.tab-print {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(237,232,226,0.45);
+  padding: 18px 0;
+  cursor: pointer;
+  border: none;
+  background: none;
+  align-self: center;
+  transition: color 0.15s;
+}
+.tab-print:hover { color: rgba(237,232,226,0.8); }
+
+/* ══ PANELS ══════════════════════════════════════ */
+.panel { display: none; padding: 48px 20px 100px; }
+.panel.active { display: block; }
+.wrap { max-width: 720px; margin: 0 auto; }
+
+/* ══ SECTION HEADER ══════════════════════════════ */
+.sec-hd {
+  margin-bottom: 32px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--dot);
+}
+.sec-hd small {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 8px;
+}
+.sec-hd h2 {
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--text);
+}
+.sec-hd h2 em { font-style: italic; color: var(--soft); }
+.sec-hd p {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--soft);
+  font-style: italic;
+}
+
+/* ══ FORM ELEMENTS ══════════════════════════════ */
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.field-group.single { grid-template-columns: 1fr; }
+.field-group.three  { grid-template-columns: 1fr 1fr 1fr; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.field input, .field select, .field textarea {
+  background: var(--bg);
+  border: 1px solid var(--dot);
+  padding: 10px 14px;
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--navy);
+}
+.field textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+
+/* ══ CARD (função) ══════════════════════════════ */
+.fn-card {
+  background: var(--bg);
+  box-shadow: 0 2px 18px rgba(0,0,0,0.07);
+  margin-bottom: 16px;
+  position: relative;
+}
+.fn-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--dot);
+  transition: background 0.3s;
+}
+.fn-card[data-risk="ok"]::after    { background: var(--ok); }
+.fn-card[data-risk="atencao"]::after { background: var(--warn); }
+.fn-card[data-risk="urgente"]::after { background: var(--risk); }
+
+.fn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid rgba(197,186,176,0.4);
+  cursor: pointer;
+  gap: 12px;
+}
+.fn-head-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+.fn-head-num {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.fn-head-name {
+  font-size: 19px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fn-head-name.empty { color: var(--muted); font-style: italic; }
+.fn-head-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.fn-badge {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--dot);
+  color: var(--muted);
+}
+.fn-badge.ok    { border-color: var(--ok);   color: var(--ok); }
+.fn-badge.atencao { border-color: var(--warn); color: var(--warn); }
+.fn-badge.urgente { border-color: var(--risk); color: var(--risk); }
+.fn-toggle {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  transition: transform 0.2s;
+}
+.fn-card.open .fn-toggle { transform: rotate(180deg); }
+
+.fn-body { display: none; padding: 24px 24px 28px; }
+.fn-card.open .fn-body { display: block; }
+
+.fn-section-lbl {
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin: 22px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(197,186,176,0.35);
+}
+.fn-section-lbl:first-child { margin-top: 0; }
+
+/* checkboxes within fn-card */
+.check-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 10px;
+  transition: background 0.12s;
+}
+.check-item:hover { background: rgba(197,186,176,0.15); }
+.check-item input { display: none; }
+.cbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--dot);
+  margin-top: 2px;
+  position: relative;
+  transition: border-color 0.12s, background 0.12s;
+}
+.check-item input:checked ~ .cbox {
+  border-color: var(--navy);
+  background: var(--navy);
+}
+.cbox::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 4px;
+  width: 5px; height: 8px;
+  border-right: 1.5px solid white;
+  border-bottom: 1.5px solid white;
+  transform: rotate(40deg);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.check-item input:checked ~ .cbox::after { opacity: 1; }
+.check-item span:last-child {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.fn-remove {
+  background: none;
+  border: 1px solid rgba(197,186,176,0.5);
+  padding: 8px 16px;
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 20px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.fn-remove:hover { border-color: var(--risk); color: var(--risk); }
+
+/* ══ ADD FUNCTION BUTTON ══════════════════════ */
+.btn-add {
+  width: 100%;
+  background: none;
+  border: 1.5px dashed var(--dot);
+  padding: 18px;
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  color: var(--muted);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: border-color 0.15s, color 0.15s;
+  margin-top: 8px;
+}
+.btn-add:hover { border-color: var(--navy); color: var(--navy); }
+
+/* ══ NAV BUTTONS ══════════════════════════════ */
+.nav-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--dot);
+}
+.btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  padding: 12px 28px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+.btn-primary { background: var(--navy); color: var(--cream); }
+.btn-primary:hover { background: #162d4a; }
+.btn-secondary { background: none; border: 1px solid var(--dot); color: var(--soft); }
+.btn-secondary:hover { border-color: var(--navy); color: var(--navy); }
+
+/* ══ REPORT ════════════════════════════════════ */
+.report-top {
+  background: var(--navy);
+  color: var(--cream);
+  padding: 40px 44px 36px;
+  margin-bottom: 32px;
+  position: relative;
+}
+.report-top::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 5px;
+  background: var(--wine);
+}
+.report-top small {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(237,232,226,0.45);
+  display: block;
+  margin-bottom: 10px;
+}
+.report-top h2 {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.report-top p { font-size: 15px; color: rgba(237,232,226,0.6); font-style: italic; }
+.report-meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.report-meta-item small {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(237,232,226,0.4);
+  display: block;
+  margin-bottom: 4px;
+}
+.report-meta-item span {
+  font-size: 17px;
+  color: var(--cream);
+}
+
+/* resumo executivo */
+.exec-summary {
+  background: var(--bg);
+  padding: 32px 36px 36px;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.07);
+  margin-bottom: 24px;
+  border-left: 3px solid var(--navy);
+}
+.exec-summary h3 {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.exec-stats {
+  display: flex;
+  gap: 0;
+  margin-bottom: 22px;
+}
+.exec-stat {
+  flex: 1;
+  text-align: center;
+  padding: 16px 8px;
+  border-right: 1px solid rgba(197,186,176,0.4);
+}
+.exec-stat:last-child { border-right: none; }
+.exec-stat-n { font-size: 36px; font-weight: 600; line-height: 1; display: block; }
+.exec-stat-n.ok    { color: var(--ok); }
+.exec-stat-n.warn  { color: var(--warn); }
+.exec-stat-n.risk  { color: var(--risk); }
+.exec-stat-lbl { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; display: block; }
+.exec-summary p {
+  font-size: 16px;
+  line-height: 1.82;
+  color: var(--soft);
+  font-style: italic;
+}
+
+/* priority list */
+.priority-list { margin-bottom: 24px; }
+.priority-lbl {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.report-fn {
+  background: var(--bg);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.report-fn::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.report-fn.ok::before    { background: var(--ok); }
+.report-fn.atencao::before { background: var(--warn); }
+.report-fn.urgente::before { background: var(--risk); }
+
+.report-fn-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 18px 22px 18px 26px;
+}
+.report-fn-main { flex: 1; min-width: 0; }
+.report-fn-nome { font-size: 19px; color: var(--text); margin-bottom: 4px; }
+.report-fn-tipo {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.report-fn-issues { display: flex; flex-wrap: wrap; gap: 6px; }
+.issue-tag {
+  font-size: 11px;
+  padding: 3px 9px;
+  letter-spacing: 0.08em;
+}
+.issue-tag.red  { background: rgba(123,45,62,0.1); color: var(--risk); }
+.issue-tag.warn { background: rgba(123,92,26,0.1); color: var(--warn); }
+.issue-tag.ok   { background: rgba(74,103,65,0.1); color: var(--ok); }
+
+.report-fn-rec {
+  flex-shrink: 0;
+  text-align: right;
+  min-width: 130px;
+}
+.rec-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 6px;
+}
+.rec-action {
+  font-size: 15px;
+  font-weight: 500;
+  display: block;
+}
+.rec-action.novo-contrato { color: var(--risk); }
+.rec-action.aditivo       { color: var(--warn); }
+.rec-action.ok            { color: var(--ok); }
+.rec-action.rever-formato { color: var(--risk); }
+
+/* observações Paula */
+.notas-paula {
+  background: rgba(30,58,95,0.05);
+  border-left: 2px solid var(--navy);
+  padding: 28px 32px 32px;
+  margin-bottom: 24px;
+}
+.notas-paula h3 {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.notas-paula textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(30,58,95,0.2);
+  padding: 8px 0 10px;
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  line-height: 1.72;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  min-height: 120px;
+}
+.notas-paula textarea::placeholder { color: var(--muted); font-style: italic; }
+
+.report-date {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 12px;
+}
+
+/* ══ EMPTY STATE ════════════════════════════ */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: 16px;
+  font-style: italic;
+}
+
+/* ══ DIVIDER ════════════════════════════════ */
+.div {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dot) 50%, transparent);
+  margin: 32px 0;
+}
+
+/* ══ PRINT ══════════════════════════════════ */
+@media print {
+  .tabs, .nav-row, .notas-paula textarea,
+  #panel-empresa, #panel-funcoes { display: none !important; }
+
+  #panel-relatorio { display: block !important; padding: 0; }
+  body { background: white; font-size: 14px; }
+  .wrap { max-width: 100%; }
+
+  .report-top { background: #1E3A5F !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-fn, .exec-summary { box-shadow: none; border: 1px solid #e0d8d0; page-break-inside: avoid; }
+  .btn-add, .fn-remove, .tab-print { display: none; }
+
+  .notas-paula { border: 1px solid #C5BAB0; }
+  .notas-paula h3 { margin-bottom: 8px; }
+  .notas-paula-print { font-size: 15px; line-height: 1.8; color: #2E2620; white-space: pre-wrap; }
+}
+
+@media (max-width: 640px) {
+  .tabs { padding: 0 16px; gap: 0; }
+  .tab { padding: 16px 12px; font-size: 12px; }
+  .tab-logo { display: none; }
+  .field-group, .field-group.three { grid-template-columns: 1fr; }
+  .check-grid { grid-template-columns: 1fr; }
+  .report-fn-inner { flex-direction: column; gap: 12px; }
+  .report-fn-rec { text-align: left; }
+  .exec-stats { flex-wrap: wrap; }
+  .exec-stat { flex: 0 0 50%; }
+  .report-top { padding: 28px 24px 24px; }
+  .exec-summary, .notas-paula { padding: 24px 20px; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+.send-status{display:none;padding:11px 16px;font-size:14.5px;line-height:1.5;margin-top:10px;border-left:3px solid var(--dot);font-family:'EB Garamond',Georgia,'Times New Roman',serif}
+.send-status.sending{display:block;background:rgba(30,58,95,.07);border-color:#1E3A5F;color:#1E3A5F}
+.send-status.ok{display:block;background:rgba(61,107,74,.08);border-color:#3D6B4A;color:#2A4D35}
+.send-status.erro{display:block;background:rgba(123,45,62,.08);border-color:#7B2D3E;color:#5A1E2A}
+</style>
+</head>
+<body>
+
+<!-- TABS -->
+<nav class="tabs">
+  <span class="tab-logo">Paula Ávila · Diagnóstico</span>
+  <button class="tab active" onclick="showTab('empresa')">1 · Empresa</button>
+  <button class="tab" onclick="showTab('funcoes')">2 · Funções</button>
+  <button class="tab" onclick="showTab('relatorio', true)">3 · Relatório</button>
+  <span class="tab-spacer"></span>
+  <button class="tab-print" onclick="window.print()">Imprimir / PDF</button>
+</nav>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PANEL 1 — EMPRESA                           -->
+<!-- ════════════════════════════════════════════ -->
+<div id="panel-empresa" class="panel active">
+<div class="wrap">
+
+  <div class="sec-hd">
+    <small>Diagnóstico de Contratação · Etapa 1 de 3</small>
+    <h2>Dados da <em>empresa</em></h2>
+    <p>Informações básicas para contextualizar o diagnóstico. Podem ser preenchidas pelo cliente antes da reunião.</p>
+  </div>
+
+  <div class="field-group">
+    <div class="field">
+      <label>Razão social / Nome</label>
+      <input type="text" id="emp-nome" placeholder="Nome da empresa">
+    </div>
+    <div class="field">
+      <label>Setor / Ramo de atividade</label>
+      <input type="text" id="emp-setor" placeholder="Ex: Tecnologia, Saúde, Varejo…">
+    </div>
+  </div>
+
+  <div class="field-group three">
+    <div class="field">
+      <label>Porte</label>
+      <select id="emp-porte">
+        <option value="">Selecionar</option>
+        <option>MEI / Solo</option>
+        <option>Micro (até 9 pessoas)</option>
+        <option>Pequena (10–49)</option>
+        <option>Média (50–199)</option>
+        <option>Grande (200+)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Total de pessoas (estimado)</label>
+      <input type="number" id="emp-total" placeholder="0" min="0">
+    </div>
+    <div class="field">
+      <label>Tempo de operação</label>
+      <select id="emp-tempo">
+        <option value="">Selecionar</option>
+        <option>Menos de 1 ano</option>
+        <option>1–3 anos</option>
+        <option>3–5 anos</option>
+        <option>5–10 anos</option>
+        <option>Mais de 10 anos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <div class="field">
+      <label>Responsável pelo preenchimento</label>
+      <input type="text" id="emp-resp" placeholder="Nome e cargo">
+    </div>
+    <div class="field">
+      <label>Data</label>
+      <input type="date" id="emp-data">
+    </div>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="sec-hd" style="margin-bottom:20px;">
+    <small>Contexto geral</small>
+    <h2>Situação atual <em>percebida</em></h2>
+    <p>O que o cliente identifica como principal preocupação ou dúvida neste momento.</p>
+  </div>
+
+  <div class="field-group single">
+    <div class="field">
+      <label>Principal preocupação do cliente com contratações</label>
+      <textarea id="emp-preocupacao" placeholder="Ex: Não sabe se os PJs têm risco de vínculo. Tem contratos desatualizados. Nunca formalizou nada por escrito…"></textarea>
+    </div>
+  </div>
+
+  <div class="field-group single">
+    <div class="field">
+      <label>Já teve ação trabalhista ou notificação?</label>
+      <select id="emp-acao">
+        <option value="">Selecionar</option>
+        <option>Não</option>
+        <option>Sim — resolvida</option>
+        <option>Sim — em andamento</option>
+        <option>Sim — mais de uma</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-primary" onclick="showTab('funcoes')">Próximo — Funções →</button>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PANEL 2 — FUNÇÕES                           -->
+<!-- ════════════════════════════════════════════ -->
+<div id="panel-funcoes" class="panel">
+<div class="wrap">
+
+  <div class="sec-hd">
+    <small>Diagnóstico de Contratação · Etapa 2 de 3</small>
+    <h2>Mapeamento de <em>funções</em></h2>
+    <p>Adicione cada função ou perfil de trabalho da empresa — CLT, PJ, MEI, autônomo, estagiário. Quanto mais detalhado, mais preciso o diagnóstico.</p>
+  </div>
+
+  <div id="fn-list"></div>
+
+  <button class="btn-add" onclick="addFuncao()">+ Adicionar função</button>
+
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="showTab('empresa')">← Voltar</button>
+    <button class="btn btn-primary" onclick="showTab('relatorio', true)">Gerar Relatório →</button>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PANEL 3 — RELATÓRIO                         -->
+<!-- ════════════════════════════════════════════ -->
+<div id="panel-relatorio" class="panel">
+<div class="wrap">
+  <div id="report-content"></div>
+
+  <div class="nav-row" style="margin-top:0;">
+    <button class="btn btn-secondary" onclick="showTab('funcoes')">← Editar funções</button>
+    <button class="btn btn-secondary" id="btn-enviar" onclick="enviarDiagnostico()">Enviar resultado</button>
+    <button class="btn btn-primary" onclick="window.print()">Imprimir / Salvar PDF</button>
+  </div>
+  <div class="send-status" id="send-status"></div>
+</div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════════
+// ⚙️  CONFIGURAÇÃO — preencha antes de distribuir
+// ═══════════════════════════════════════════════
+const CONFIG = {
+  // — EmailJS (emailjs.com — plano gratuito: 200 envios/mês) —
+  emailjs_public_key:  'COLE_SUA_PUBLIC_KEY_AQUI',   // Account > API Keys
+  emailjs_service_id:  'COLE_SEU_SERVICE_ID_AQUI',   // Email Services > Service ID
+  emailjs_template_id: 'COLE_SEU_TEMPLATE_ID_AQUI',  // Email Templates > Template ID
+  email_destino:       'paula@seudominio.com.br',     // E-mail que receberá os resultados
+
+  // — Google Sheets via Apps Script —
+  // 1. Crie uma planilha em sheets.google.com
+  // 2. Extensões > Apps Script > cole o código abaixo > Salvar
+  // 3. Implantar > Novo > Web App > Executar como: você > Acesso: qualquer pessoa > Implantar
+  // 4. Cole a URL gerada aqui:
+  sheets_url: 'COLE_A_URL_DO_APPS_SCRIPT_AQUI',
+
+  // ── CÓDIGO PARA COLAR NO APPS SCRIPT ──────────────────────────
+  // function doPost(e) {
+  //   try {
+  //     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  //     var d = JSON.parse(e.postData.contents);
+  //     sheet.appendRow([
+  //       d.data, d.empresa, d.setor, d.porte,
+  //       d.total_funcoes, d.urgentes, d.atencoes, d.oks,
+  //       d.funcoes_resumo, d.notas
+  //     ]);
+  //     return ContentService.createTextOutput('ok');
+  //   } catch(err) {
+  //     return ContentService.createTextOutput('erro: ' + err);
+  //   }
+  // }
+};
+
+// ═══════════════════════════════════════════════
+// ENVIO — e-mail + planilha
+// ═══════════════════════════════════════════════
+function enviarDiagnostico() {
+  const statusEl = document.getElementById('send-status');
+  const btnEl    = document.getElementById('btn-enviar');
+
+  // Coleta dados da empresa
+  const empresa = document.getElementById('emp-nome')?.value || '—';
+  const setor   = document.getElementById('emp-setor')?.value || '—';
+  const porte   = document.getElementById('emp-porte')?.value || '—';
+  const total   = document.getElementById('emp-total')?.value || '—';
+  const resp    = document.getElementById('emp-resp')?.value || '—';
+  const notas   = document.getElementById('notas-paula-txt')?.value || '';
+
+  // Coleta dados das funções
+  const allData = funcoes.map(f => {
+    const d = getFnData(f.id);
+    const { level, rec, issues } = calcRisk(d);
+    return { ...d, level, rec, issues };
+  });
+
+  const nUrgente = allData.filter(d => d.level === 'urgente').length;
+  const nAtencao = allData.filter(d => d.level === 'atencao').length;
+  const nOk      = allData.filter(d => d.level === 'ok').length;
+
+  const funcoesResumo = allData.map(d =>
+    `${d.nome||'—'} (${(d.tipoContrato||'—').toUpperCase()}) → ${d.rec||'—'} | ${(d.issues||[]).map(i=>i.label).join(', ')}`
+  ).join('\n');
+
+  const payload = {
+    data:           new Date().toLocaleDateString('pt-BR'),
+    empresa,
+    setor,
+    porte,
+    responsavel:    resp,
+    total_funcoes:  String(allData.length),
+    urgentes:       String(nUrgente),
+    atencoes:       String(nAtencao),
+    oks:            String(nOk),
+    funcoes_resumo: funcoesResumo,
+    notas,
+    email_destino:  CONFIG.email_destino,
+  };
+
+  const ejsConfigured    = CONFIG.emailjs_public_key !== 'COLE_SUA_PUBLIC_KEY_AQUI';
+  const sheetsConfigured = CONFIG.sheets_url !== 'COLE_A_URL_DO_APPS_SCRIPT_AQUI';
+  let pendentes = (ejsConfigured ? 1 : 0) + (sheetsConfigured ? 1 : 0);
+
+  if (pendentes === 0) {
+    statusEl.className = 'send-status erro';
+    statusEl.textContent = '✗ Configure as chaves em CONFIG antes de enviar (veja os comentários no código).';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  statusEl.className = 'send-status sending';
+  statusEl.textContent = 'Enviando…';
+  statusEl.style.display = 'block';
+  btnEl.disabled = true;
+
+  let emailOk = false, sheetsOk = false, erros = [];
+
+  const finish = () => {
+    btnEl.disabled = false;
+    if (emailOk && sheetsOk) {
+      statusEl.className = 'send-status ok';
+      statusEl.textContent = `✓ Enviado com sucesso — e-mail e planilha atualizados (${new Date().toLocaleTimeString('pt-BR')}).`;
+    } else if (emailOk || sheetsOk) {
+      statusEl.className = 'send-status ok';
+      statusEl.textContent = `✓ Enviado parcialmente: ${emailOk?'e-mail ✓':'e-mail ✗'}  ${sheetsOk?'planilha ✓':'planilha ✗'}. ${erros.join(' ')}`;
+    } else {
+      statusEl.className = 'send-status erro';
+      statusEl.textContent = `✗ Falha no envio. Verifique a configuração ou a conexão com a internet. ${erros.join(' ')}`;
+    }
+  };
+
+  if (ejsConfigured) {
+    emailjs.init({ publicKey: CONFIG.emailjs_public_key });
+    emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_id, payload)
+      .then(() => { emailOk = true; })
+      .catch(err => { erros.push('EmailJS: ' + (err.text || err)); })
+      .finally(() => { pendentes--; if (!pendentes) finish(); });
+  }
+
+  if (sheetsConfigured) {
+    fetch(CONFIG.sheets_url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    .then(() => { sheetsOk = true; })
+    .catch(err => { erros.push('Sheets: ' + err.message); })
+    .finally(() => { pendentes--; if (!pendentes) finish(); });
+  }
+}
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let funcoes = [];
+let fnCounter = 0;
+
+const TIPOS_CONTRATO = {
+  clt:          'CLT',
+  pj:           'PJ / Pessoa Jurídica',
+  mei:          'MEI',
+  autonomo:     'Autônomo (RPA)',
+  intermitente: 'Intermitente',
+  estagio:      'Estágio',
+  outro:        'Outro',
+};
+
+// ══════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════
+function showTab(name, generate) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const tabs = { empresa: 0, funcoes: 1, relatorio: 2 };
+  document.querySelectorAll('.tab')[tabs[name]].classList.add('active');
+  if (generate) buildReport();
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════
+// FUNÇÕES — CRUD
+// ══════════════════════════════════════════════════
+function addFuncao() {
+  const id = ++fnCounter;
+  funcoes.push({ id });
+  renderFnList();
+  // open last
+  const last = document.querySelector(`.fn-card[data-id="${id}"]`);
+  if (last) { last.classList.add('open'); }
+}
+
+function removeFuncao(id) {
+  funcoes = funcoes.filter(f => f.id !== id);
+  renderFnList();
+}
+
+function getFnDataFromState(f) {
+  if (!f.state) return getFnData(f.id);
+  const s = f.state;
+  const id = f.id;
+  const v = key => s[`${id}-${key}`] || '';
+  const c = key => !!s[`${id}-${key}`];
+  return {
+    id,
+    nome:               v('nome'),
+    quantidade:         v('qtd'),
+    tipoContrato:       v('tipo'),
+    defineHorario:      c('define-horario'),
+    orientaDiario:      c('orienta-diario'),
+    segueProcesso:      c('segue-processo'),
+    usaFerramentas:     c('usa-ferramentas'),
+    exclusividade:      c('exclusividade'),
+    dependencia:        c('dependencia'),
+    disponibilidade:    c('disponibilidade'),
+    reporte:            c('reporte'),
+    coreOperacao:       c('core-operacao'),
+    possuiContrato:     c('possui-contrato'),
+    contratoAssinado:   c('contrato-assinado'),
+    contratoAtualizado: c('contrato-atualizado'),
+    clausulaConf:       c('clausula-conf'),
+    clausulaPI:         c('clausula-pi'),
+    guardaDocumentos:   c('guarda-docs'),
+    obs:                v('obs'),
+  };
+}
+
+function getFnData(id) {
+  const card = document.querySelector(`.fn-card[data-id="${id}"]`);
+  if (!card) return {};
+
+  const v = s => { const el = card.querySelector(`[data-fn="${id}-${s}"]`); return el ? el.value : ''; };
+  const c = s => { const el = card.querySelector(`[data-fn="${id}-${s}"]`); return el ? el.checked : false; };
+
+  return {
+    id,
+    nome:              v('nome'),
+    quantidade:        v('qtd'),
+    tipoContrato:      v('tipo'),
+    // como funciona
+    defineHorario:     c('define-horario'),
+    orientaDiario:     c('orienta-diario'),
+    segueProcesso:     c('segue-processo'),
+    usaFerramentas:    c('usa-ferramentas'),
+    exclusividade:     c('exclusividade'),
+    dependencia:       c('dependencia'),
+    disponibilidade:   c('disponibilidade'),
+    reporte:           c('reporte'),
+    coreOperacao:      c('core-operacao'),
+    // documentos
+    possuiContrato:    c('possui-contrato'),
+    contratoAssinado:  c('contrato-assinado'),
+    contratoAtualizado: c('contrato-atualizado'),
+    clausulaConf:      c('clausula-conf'),
+    clausulaPI:        c('clausula-pi'),
+    guardaDocumentos:  c('guarda-docs'),
+    // obs
+    obs:               v('obs'),
+  };
+}
+
+function calcRisk(d) {
+  if (!d.tipoContrato && !d.defineHorario && !d.possuiContrato) {
+    return { level: null, score: 0, issues: [], rec: null };
+  }
+
+  const sub = [
+    d.defineHorario, d.orientaDiario, d.segueProcesso,
+    d.usaFerramentas, d.exclusividade, d.dependencia,
+    d.disponibilidade, d.reporte, d.coreOperacao
+  ].filter(Boolean).length;
+
+  const docIssues = [
+    !d.possuiContrato, !d.contratoAssinado, !d.contratoAtualizado,
+    !d.clausulaConf, !d.guardaDocumentos
+  ].filter(Boolean).length;
+
+  const issues = [];
+  let level, rec;
+
+  // Formato errado
+  const riskTipo = ['pj','mei','autonomo'].includes(d.tipoContrato);
+  const riskFormato = riskTipo && sub >= 4;
+  const riskMedio   = riskTipo && sub >= 2 && sub < 4;
+
+  if (riskFormato) {
+    issues.push({ label: `${sub} elementos de subordinação`, type: 'red' });
+    issues.push({ label: 'Risco de reconhecimento de vínculo', type: 'red' });
+  } else if (riskMedio) {
+    issues.push({ label: `${sub} elementos de subordinação`, type: 'warn' });
+  }
+
+  if (!d.possuiContrato)    issues.push({ label: 'Sem contrato formalizado', type: 'red' });
+  if (!d.contratoAssinado)  issues.push({ label: 'Contrato não assinado', type: 'red' });
+  if (!d.contratoAtualizado) issues.push({ label: 'Contrato desatualizado', type: 'warn' });
+  if (!d.clausulaConf)      issues.push({ label: 'Sem confidencialidade', type: 'warn' });
+  if (!d.guardaDocumentos)  issues.push({ label: 'Guarda de documentos pendente', type: 'warn' });
+  if (d.clausulaPI === false && ['pj','mei','autonomo'].includes(d.tipoContrato))
+    issues.push({ label: 'Propriedade intelectual indefinida', type: 'warn' });
+
+  // Determina nível e recomendação
+  if (riskFormato || !d.possuiContrato) {
+    level = 'urgente';
+    rec   = riskFormato ? 'Rever formato' : 'Novo contrato';
+  } else if (riskMedio || !d.contratoAssinado || (!d.contratoAtualizado && sub >= 1)) {
+    level = 'atencao';
+    rec   = riskMedio ? 'Novo contrato' : 'Aditivo';
+  } else if (docIssues >= 2) {
+    level = 'atencao';
+    rec   = 'Aditivo';
+  } else {
+    level = 'ok';
+    rec   = 'Manter / Pequenos ajustes';
+  }
+
+  // Se CLT com tudo ok
+  if (d.tipoContrato === 'clt' && !riskFormato && issues.length === 0) {
+    level = 'ok'; rec = 'Ok';
+  }
+
+  if (issues.length === 0) issues.push({ label: 'Nenhum problema identificado', type: 'ok' });
+
+  return { level, score: sub, issues, rec };
+}
+
+function saveFnStates() {
+  funcoes.forEach(f => {
+    const card = document.querySelector(`.fn-card[data-id="${f.id}"]`);
+    if (!card) return;
+    const state = f.state || {};
+    card.querySelectorAll('input, select, textarea').forEach(el => {
+      const key = el.dataset.fn;
+      if (!key) return;
+      state[key] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    state['__open'] = card.classList.contains('open');
+    f.state = state;
+  });
+}
+
+function restoreFnStates() {
+  funcoes.forEach(f => {
+    if (!f.state) return;
+    const card = document.querySelector(`.fn-card[data-id="${f.id}"]`);
+    if (!card) return;
+    card.querySelectorAll('input, select, textarea').forEach(el => {
+      const key = el.dataset.fn;
+      if (!key || !(key in f.state)) return;
+      if (el.type === 'checkbox') el.checked = f.state[key];
+      else el.value = f.state[key];
+    });
+    if (f.state['__open']) card.classList.add('open');
+    updateCardHeader(f.id);
+  });
+}
+
+function renderFnList() {
+  saveFnStates();
+  const list = document.getElementById('fn-list');
+  if (funcoes.length === 0) {
+    list.innerHTML = '<p class="empty">Nenhuma função adicionada ainda.<br>Clique em "+ Adicionar função" para começar.</p>';
+    return;
+  }
+  list.innerHTML = funcoes.map((f, i) => renderFnCard(f, i + 1)).join('');
+  restoreFnStates();
+
+  // Bind events — save state on every change
+  list.querySelectorAll('.fn-card').forEach(card => {
+    const id = +card.dataset.id;
+    card.querySelector('.fn-head').addEventListener('click', () => {
+      card.classList.toggle('open');
+    });
+    card.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('click', e => e.stopPropagation());
+      el.addEventListener('change', () => { saveFnStates(); updateCardHeader(id); });
+      el.addEventListener('input',  () => { saveFnStates(); updateCardHeader(id); });
+    });
+  });
+}
+
+function renderFnCard(f, num) {
+  const id = f.id;
+  const tipos = Object.entries(TIPOS_CONTRATO)
+    .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+
+  return `
+<div class="fn-card" data-id="${id}" data-risk="">
+  <div class="fn-head">
+    <div class="fn-head-left">
+      <span class="fn-head-num">${String(num).padStart(2,'0')}</span>
+      <span class="fn-head-name empty" id="fn-name-${id}">Nova função</span>
+    </div>
+    <div class="fn-head-right">
+      <span class="fn-badge" id="fn-badge-${id}">—</span>
+      <span class="fn-toggle">▾</span>
+    </div>
+  </div>
+  <div class="fn-body">
+
+    <div class="field-group">
+      <div class="field">
+        <label>Nome da função / cargo</label>
+        <input type="text" data-fn="${id}-nome" placeholder="Ex: Designer, Dev, Assistente…">
+      </div>
+      <div class="field">
+        <label>Quantidade de pessoas</label>
+        <input type="number" data-fn="${id}-qtd" placeholder="1" min="1">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field">
+        <label>Tipo de contrato atual</label>
+        <select data-fn="${id}-tipo">
+          <option value="">Selecionar</option>
+          ${tipos}
+        </select>
+      </div>
+      <div class="field">
+        <label>Última revisão do contrato</label>
+        <input type="date" data-fn="${id}-revisao">
+      </div>
+    </div>
+
+    <span class="fn-section-lbl">Como o trabalho funciona na prática</span>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" data-fn="${id}-define-horario"><span class="cbox"></span><span>Você define horário ou disponibilidade</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-orienta-diario"><span class="cbox"></span><span>Orienta diariamente o que e como fazer</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-segue-processo"><span class="cbox"></span><span>Segue processos criados pela empresa</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-usa-ferramentas"><span class="cbox"></span><span>Usa ferramentas / sistemas da empresa</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-exclusividade"><span class="cbox"></span><span>Na prática não atende outros clientes</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-dependencia"><span class="cbox"></span><span>Depende financeiramente desta empresa</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-disponibilidade"><span class="cbox"></span><span>Está disponível quando chamado</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-reporte"><span class="cbox"></span><span>Tem metas, reporte ou reuniões regulares</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-core-operacao"><span class="cbox"></span><span>Executa atividade core do negócio</span></label>
+    </div>
+
+    <span class="fn-section-lbl">Situação documental</span>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" data-fn="${id}-possui-contrato"><span class="cbox"></span><span>Possui contrato formalizado</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-contrato-assinado"><span class="cbox"></span><span>Contrato assinado por ambas as partes</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-contrato-atualizado"><span class="cbox"></span><span>Contrato reflete a rotina atual</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-clausula-conf"><span class="cbox"></span><span>Cláusula de confidencialidade</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-clausula-pi"><span class="cbox"></span><span>Propriedade intelectual definida</span></label>
+      <label class="check-item"><input type="checkbox" data-fn="${id}-guarda-docs"><span class="cbox"></span><span>Documentos guardados e organizados</span></label>
+    </div>
+
+    <span class="fn-section-lbl">Observações desta função</span>
+    <div class="field-group single">
+      <div class="field">
+        <textarea data-fn="${id}-obs" placeholder="Detalhes relevantes, histórico, particularidades…" style="min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <button class="fn-remove" onclick="event.stopPropagation(); removeFuncao(${id})">Remover esta função</button>
+  </div>
+</div>`;
+}
+
+function updateCardHeader(id) {
+  const d = getFnData(id);
+  const { level, issues, rec } = calcRisk(d);
+  const card  = document.querySelector(`.fn-card[data-id="${id}"]`);
+  const nameEl = document.getElementById(`fn-name-${id}`);
+  const badge  = document.getElementById(`fn-badge-${id}`);
+
+  if (nameEl) {
+    nameEl.textContent = d.nome || 'Nova função';
+    nameEl.classList.toggle('empty', !d.nome);
+  }
+
+  if (badge && level) {
+    const labels = { ok: 'Ok', atencao: 'Atenção', urgente: 'Urgente' };
+    badge.textContent = labels[level] || '—';
+    badge.className = `fn-badge ${level}`;
+    card.dataset.risk = level;
+  }
+}
+
+// ══════════════════════════════════════════════════
+// REPORT
+// ══════════════════════════════════════════════════
+function buildReport() {
+  const nome      = document.getElementById('emp-nome')?.value || '—';
+  const setor     = document.getElementById('emp-setor')?.value || '—';
+  const porte     = document.getElementById('emp-porte')?.value || '—';
+  const total     = document.getElementById('emp-total')?.value || '—';
+  const data      = document.getElementById('emp-data')?.value;
+  const resp      = document.getElementById('emp-resp')?.value || '—';
+  const preoc     = document.getElementById('emp-preocupacao')?.value || '';
+  const acao      = document.getElementById('emp-acao')?.value || '—';
+  const dataFmt   = data ? new Date(data + 'T12:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+
+  // Collect all function data
+  const allData = funcoes.map(f => {
+    saveFnStates();
+    const d = getFnDataFromState(f);
+    return { ...d, ...calcRisk(d) };
+  });
+
+  const nOk       = allData.filter(d => d.level === 'ok').length;
+  const nAtencao  = allData.filter(d => d.level === 'atencao').length;
+  const nUrgente  = allData.filter(d => d.level === 'urgente').length;
+  const nPendente = allData.filter(d => !d.level).length;
+
+  // Sort by urgency
+  const sorted = [...allData].sort((a, b) => {
+    const ord = { urgente: 0, atencao: 1, ok: 2 };
+    return (ord[a.level] ?? 3) - (ord[b.level] ?? 3);
+  });
+
+  // Executive summary text
+  let summaryText = '';
+  if (allData.length === 0) {
+    summaryText = 'Nenhuma função mapeada.';
+  } else if (nUrgente === 0 && nAtencao === 0 && nPendente === 0) {
+    summaryText = `As ${allData.length} funções mapeadas estão bem estruturadas. Recomenda-se revisão periódica dos contratos para garantir que continuam refletindo a realidade de cada relação.`;
+  } else {
+    const partes = [];
+    if (nUrgente > 0) partes.push(`${nUrgente} função${nUrgente > 1 ? 'ões' : ''} com risco imediato`);
+    if (nAtencao > 0) partes.push(`${nAtencao} função${nAtencao > 1 ? 'ões' : ''} que requer${nAtencao > 1 ? 'em' : ''} atenção`);
+    if (nOk > 0)      partes.push(`${nOk} função${nOk > 1 ? 'ões' : ''} sem problemas identificados`);
+    summaryText = `Do total de ${allData.length} funções mapeadas: ${partes.join(', ')}. `;
+    if (nUrgente > 0) summaryText += `As situações urgentes precisam de intervenção antes de qualquer renovação ou expansão de equipe.`;
+  }
+
+  const recLabels = {
+    'Rever formato':           { cls: 'rever-formato', txt: 'Rever formato' },
+    'Novo contrato':           { cls: 'novo-contrato', txt: 'Novo contrato' },
+    'Aditivo':                 { cls: 'aditivo',       txt: 'Aditivo' },
+    'Manter / Pequenos ajustes': { cls: 'ok',          txt: 'Manter' },
+    'Ok':                      { cls: 'ok',            txt: 'Ok' },
+  };
+
+  const fnRows = sorted.length === 0
+    ? '<p class="empty">Nenhuma função mapeada.</p>'
+    : sorted.map(d => {
+        const rc = recLabels[d.rec] || { cls: 'ok', txt: d.rec };
+        const issuesTags = (d.issues || []).map(i =>
+          `<span class="issue-tag ${i.type}">${i.label}</span>`).join('');
+        const tipoLabel = TIPOS_CONTRATO[d.tipoContrato] || d.tipoContrato || '—';
+        return `
+<div class="report-fn ${d.level || 'ok'}">
+  <div class="report-fn-inner">
+    <div class="report-fn-main">
+      <div class="report-fn-nome">${d.nome || '—'}${d.quantidade ? ` <span style="font-size:13px;color:var(--muted)">(${d.quantidade})</span>` : ''}</div>
+      <div class="report-fn-tipo">${tipoLabel}</div>
+      <div class="report-fn-issues">${issuesTags}</div>
+      ${d.obs ? `<p style="margin-top:10px;font-size:14px;color:var(--soft);font-style:italic;">${d.obs}</p>` : ''}
+    </div>
+    <div class="report-fn-rec">
+      <span class="rec-label">Recomendação</span>
+      <span class="rec-action ${rc.cls}">${rc.txt}</span>
+    </div>
+  </div>
+</div>`;
+      }).join('');
+
+  document.getElementById('report-content').innerHTML = `
+<div class="report-top">
+  <small>Diagnóstico de Contratação · Paula Ávila</small>
+  <h2>${nome}</h2>
+  <p>${setor}${porte !== '—' ? ' · ' + porte : ''}${acao !== '—' ? ' · Ação trabalhista: ' + acao : ''}</p>
+  <div class="report-meta">
+    <div class="report-meta-item"><small>Total mapeado</small><span>${allData.length} função${allData.length !== 1 ? 'ões' : ''}</span></div>
+    <div class="report-meta-item"><small>Responsável</small><span>${resp}</span></div>
+    <div class="report-meta-item"><small>Data</small><span>${dataFmt}</span></div>
+  </div>
+</div>
+
+<div class="exec-summary">
+  <h3>Resumo Executivo</h3>
+  <div class="exec-stats">
+    <div class="exec-stat"><span class="exec-stat-n risk">${nUrgente}</span><span class="exec-stat-lbl">Urgente</span></div>
+    <div class="exec-stat"><span class="exec-stat-n warn">${nAtencao}</span><span class="exec-stat-lbl">Atenção</span></div>
+    <div class="exec-stat"><span class="exec-stat-n ok">${nOk}</span><span class="exec-stat-lbl">Ok</span></div>
+    <div class="exec-stat"><span class="exec-stat-n" style="color:var(--text)">${allData.length}</span><span class="exec-stat-lbl">Total</span></div>
+  </div>
+  <p>${summaryText}</p>
+  ${preoc ? `<p style="margin-top:14px;"><strong style="font-weight:500;font-style:normal;">Preocupação relatada:</strong> ${preoc}</p>` : ''}
+</div>
+
+<span class="priority-lbl">Priorização por urgência</span>
+${fnRows}
+
+<div class="div"></div>
+
+<div class="notas-paula">
+  <h3>Observações de Paula Ávila</h3>
+  <textarea id="notas-paula-txt" placeholder="Anotações da reunião, contexto adicional, próximos passos acordados, prazo para envio de contratos…" rows="6"></textarea>
+  <div class="notas-paula-print" id="notas-paula-print" style="display:none;"></div>
+</div>
+
+<p class="report-date">Gerado em ${new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>`;
+
+  // sync print version of notas
+  const notasTxt = document.getElementById('notas-paula-txt');
+  const notasPrint = document.getElementById('notas-paula-print');
+  if (notasTxt) {
+    notasTxt.addEventListener('input', () => {
+      if (notasPrint) notasPrint.textContent = notasTxt.value;
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════
+// PRINT: show print version of notas
+// ══════════════════════════════════════════════════
+window.addEventListener('beforeprint', () => {
+  const txt = document.getElementById('notas-paula-txt');
+  const pr  = document.getElementById('notas-paula-print');
+  if (txt && pr) {
+    pr.textContent = txt.value;
+    pr.style.display = 'block';
+  }
+});
+window.addEventListener('afterprint', () => {
+  const pr = document.getElementById('notas-paula-print');
+  if (pr) pr.style.display = 'none';
+});
+
+// Init with one function
+addFuncao();
+</script>
+</body>
+</html>
